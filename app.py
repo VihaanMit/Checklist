@@ -38,9 +38,22 @@ def remove_items():
         for item in checked_items:
             cursor.execute("DELETE FROM items WHERE item_name=?", (item,))
         conn.commit()
+    return redirect('/add_items')
+
+@app.route('/edit_item/<string:item_name>', methods=['POST'])
+def edit_item(item_name):
+    new_item_name = request.form.get("new_item_name")
+    old_item_name = request.form.get("old_item_name")
+    if not new_item_name:
+        return redirect('/add_items')
+    with sqlite3.connect('app.db') as conn:
+        cursor = conn.cursor()
+        cursor.execute("UPDATE items SET item_name = ? WHERE item_name = ?", (new_item_name, old_item_name))
+        conn.commit()
+        
+            
     
     return redirect('/add_items')
 
 if __name__ == '__main__':
     app.run(debug=True)
-
