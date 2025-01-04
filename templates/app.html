@@ -65,6 +65,20 @@
             padding: 10px; 
             width: 90%;
         }
+        .checked {
+            text-decoration: line-through;
+            color: grey;
+        }
+        .edit-link {
+            margin-left: auto;
+            color: #007bff;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .edit-link:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body style="background-color: antiquewhite;">  
@@ -75,7 +89,8 @@
                 <h2>Your Checklist</h2>
                 {% for item in items %}
                     <label class="checklist-item">
-                        <input type="checkbox" name="items" value="{{ item[0] }}"> {{ item[0] }}
+                        <input type="checkbox" class="checkbox" name="items" value="{{ item[0] }}"> {{ item[0] }}
+                        <a href="#" id="edit_item" data-name="{{ item[0] }}" class="edit-link" style="font-size: small;">Edit</a>
                     </label><br>
                 {% endfor %}
                 <button type="submit">Remove Selected Items</button>
@@ -89,5 +104,53 @@
             <button type="submit">+ Item</button>
         </form>
     </div>
+    <div id="edit-form-container" style="display:none; padding: 20px; background: #f4f4f4; border-radius: 5px;">
+        <h3>Edit Item</h3>
+        <form id="edit-form" action="#" method="POST">
+            <input type="hidden" id="old-item-name" name="old_item_name">
+            <input type="hidden" id="edit-item-id" name="item_id">
+            <input type="text" id="new-item-name" name="new_item_name" placeholder="Enter new item name" required>
+            <button type="submit">Save</button>
+            <button type="button" id="close-edit-form">Cancel</button>
+        </form>
+    </div>
+
 </body>
+<script>
+    document.querySelectorAll('.checkbox').forEach(function (element) {
+    element.addEventListener('click', function () {
+        let label = element.parentElement;
+        label.classList.toggle('checked');
+    });
+    });
+
+    document.querySelectorAll('.edit-link').forEach(function(editLink) {
+        editLink.addEventListener('click', function(event) {
+            event.preventDefault();
+
+            const itemName = editLink.getAttribute('data-name');
+            document.getElementById('new-item-name').value = itemName;
+            document.getElementById('old-item-name').value = itemName;
+
+            document.getElementById('edit-form-container').style.display = 'block';
+        });
+        });
+
+        document.getElementById('close-edit-form').addEventListener('click', function() {
+        document.getElementById('edit-form-container').style.display = 'none';
+    });
+
+    document.getElementById('edit-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const newItemName = document.getElementById('new-item-name').value;
+    const oldItemName = document.getElementById('old-item-name').value;
+
+    document.getElementById('edit-form').action = `/edit_item/${oldItemName}`;
+
+    document.getElementById('edit-form').submit();
+    });
+
+
+</script>
 </html>
